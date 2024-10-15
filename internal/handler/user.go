@@ -3,6 +3,8 @@ package handler
 import (
 	"net/http"
 	"regexp"
+	"webook/internal/domain"
+	"webook/internal/service"
 
 	regexp2 "github.com/dlclark/regexp2"
 
@@ -16,13 +18,17 @@ const (
 )
 
 type UserHandler struct {
+	svc         *service.UserService
 	passwordExp *regexp2.Regexp
 }
 
-func NewUserHandler() *UserHandler {
+func NewUserHandler(svc *service.UserService) *UserHandler {
 	//optimize 预编译正则表达式
 	re := regexp2.MustCompile(passwordRegexPattern, 0)
-	return &UserHandler{passwordExp: re}
+	return &UserHandler{
+		svc:         svc,
+		passwordExp: re,
+	}
 }
 
 func (u *UserHandler) SignIn(ctx *gin.Context) {
@@ -56,6 +62,12 @@ func (u *UserHandler) SignUp(ctx *gin.Context) {
 	}
 	if !matched {
 		ctx.JSON(http.StatusBadRequest, gin.H{"error": "password format error"})
+		return
+	}
+
+	err = u.svc.SignUp(ctx, domain.User{Email: req.Email, Password: req.Password})
+	if err != nil {
+		ctx.JSON(http.StatusOK, gin.H{"error": err.Error()})
 		return
 	}
 

@@ -3,9 +3,15 @@ package router
 import (
 	"strings"
 	"time"
+	"webook/internal/handler"
+	"webook/internal/repository"
+	"webook/internal/repository/database"
+	"webook/internal/service"
 
 	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
+	"gorm.io/driver/mysql"
+	"gorm.io/gorm"
 )
 
 func InitRouter() *gin.Engine {
@@ -31,7 +37,9 @@ func InitRouter() *gin.Engine {
 		c.JSON(200, gin.H{"message": "pong"})
 	})
 
-	u := &UserRouter{}
+	db := initDB()
+	uh := initUserHandler(db)
+	u := NewUserRouter(uh)
 
 	v1 := r.Group("/api/v1")
 	{
@@ -39,4 +47,24 @@ func InitRouter() *gin.Engine {
 	}
 
 	return r
+}
+
+func initUserHandler(db *gorm.DB) *handler.UserHandler {
+	dao := database.NewUserDAO(db)
+	repo := repository.NewUserRepository(dao)
+	svc := service.NewUserService(repo)
+	uh := handler.NewUserHandler(svc)
+	return uh
+}
+
+func initDB() *gorm.DB {
+	db, err := gorm.Open(mysql.Open("root:root@tcp(localhost:13306)/webook"))
+	if err != nil {
+		panic("failed to connect database")
+	}
+	err = database.InitTable(db)
+	if err != nil {
+		panic("failed to init table")
+	}
+	return db
 }
