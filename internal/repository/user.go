@@ -22,3 +22,16 @@ func (r *UserRepository) Create(ctx context.Context, u domain.User) error {
 		UpdatedAt: u.Updated,
 	})
 }
+
+func (r *UserRepository) GetByEmail(ctx context.Context, email string) (domain.User, error) {
+	u, err := r.dao.SelectByEmail(ctx, email)
+	if err != nil {
+		return domain.User{}, err
+	}
+	return domain.User{
+		Email:    u.Email,
+		Password: u.Password,
+		Created:  u.CreatedAt,
+		Updated:  u.UpdatedAt,
+	}, nil
+}
