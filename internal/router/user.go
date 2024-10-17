@@ -2,6 +2,7 @@ package router
 
 import (
 	"webook/internal/handler"
+	"webook/internal/middleware"
 
 	"github.com/gin-gonic/gin"
 )
@@ -16,11 +17,12 @@ func NewUserRouter(uh *handler.UserHandler) *UserRouter {
 
 func (u *UserRouter) RegisterUserRoutes(router *gin.RouterGroup) {
 
+	requireLogin := middleware.NewAuthMiddlewareBuilder().Build()
 	userGroup := router.Group("/users")
 	{
-		userGroup.GET("/profile", u.uh.Profile) // 获取其他用户信息
-		userGroup.POST("/signup", u.uh.SignUp)  // 注册
-		userGroup.POST("/signin", u.uh.SignIn)  // 登录
-		userGroup.PUT("/edit", u.uh.Edit)       // 登录
+		userGroup.GET("/profile", requireLogin, u.uh.Profile) // 获取其他用户信息
+		userGroup.POST("/signup", u.uh.SignUp)                // 注册
+		userGroup.POST("/login", u.uh.SignIn)                 // 登录
+		userGroup.PUT("/edit", requireLogin, u.uh.Edit)       // 登录
 	}
 }

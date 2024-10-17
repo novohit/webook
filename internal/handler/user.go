@@ -7,6 +7,7 @@ import (
 	"webook/internal/service"
 
 	regexp2 "github.com/dlclark/regexp2"
+	"github.com/gin-contrib/sessions"
 
 	"github.com/gin-gonic/gin"
 )
@@ -43,7 +44,7 @@ func (u *UserHandler) SignIn(ctx *gin.Context) {
 		return
 	}
 
-	err := u.svc.SignIn(ctx, domain.User{
+	user, err := u.svc.SignIn(ctx, domain.User{
 		Email:    req.Email,
 		Password: req.Password,
 	})
@@ -51,8 +52,10 @@ func (u *UserHandler) SignIn(ctx *gin.Context) {
 		ctx.JSON(http.StatusOK, gin.H{"error": err.Error()})
 		return
 	}
-
-	ctx.JSON(200, gin.H{"message": "success"})
+	session := sessions.Default(ctx)
+	session.Set("user_id", user.Email)
+	session.Save()
+	ctx.JSON(200, gin.H{"message": "success", "data": user})
 }
 
 func (u *UserHandler) SignUp(ctx *gin.Context) {
@@ -96,6 +99,7 @@ func (u *UserHandler) SignUp(ctx *gin.Context) {
 
 func (u *UserHandler) Profile(ctx *gin.Context) {
 	//
+	ctx.JSON(http.StatusOK, gin.H{"message": "success"})
 }
 
 func (u *UserHandler) Edit(ctx *gin.Context) {

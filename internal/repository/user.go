@@ -29,6 +29,7 @@ func (r *UserRepository) GetByEmail(ctx context.Context, email string) (domain.U
 		return domain.User{}, err
 	}
 	return domain.User{
+		Id:       u.Id,
 		Email:    u.Email,
 		Password: u.Password,
 		Created:  u.CreatedAt,

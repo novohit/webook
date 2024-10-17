@@ -9,6 +9,8 @@ import (
 	"webook/internal/service"
 
 	"github.com/gin-contrib/cors"
+	"github.com/gin-contrib/sessions"
+	"github.com/gin-contrib/sessions/cookie"
 	"github.com/gin-gonic/gin"
 	"gorm.io/driver/mysql"
 	"gorm.io/gorm"
@@ -32,6 +34,8 @@ func InitRouter() *gin.Engine {
 		MaxAge: 12 * time.Hour,
 	}))
 	//r.Use(middleware.AuthRequire())
+	store := cookie.NewStore([]byte("secret"))
+	r.Use(sessions.Sessions("session_id", store))
 
 	r.GET("/ping", func(c *gin.Context) {
 		c.JSON(200, gin.H{"message": "pong"})

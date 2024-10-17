@@ -31,14 +31,14 @@ func (svc *UserService) SignUp(ctx context.Context, u domain.User) error {
 	return svc.repo.Create(ctx, u)
 }
 
-func (svc *UserService) SignIn(ctx context.Context, u domain.User) error {
+func (svc *UserService) SignIn(ctx context.Context, u domain.User) (*domain.User, error) {
 	dbUser, err := svc.repo.GetByEmail(ctx, u.Email)
 	if err != nil {
-		return global.ErrUserNotFound
+		return nil, global.ErrUserNotFound
 	}
 	err = bcrypt.CompareHashAndPassword([]byte(dbUser.Password), []byte(u.Password))
 	if err != nil {
-		return global.ErrUserOrPassword
+		return nil, global.ErrUserOrPassword
 	}
-	return nil
+	return &dbUser, nil
 }
