@@ -8,14 +8,31 @@ import (
 )
 
 type AuthMiddlewareBuilder struct {
+	ignorePaths []string
 }
 
 func NewAuthMiddlewareBuilder() *AuthMiddlewareBuilder {
 	return &AuthMiddlewareBuilder{}
 }
 
+func (b *AuthMiddlewareBuilder) IgnorePath(ignorePath string) *AuthMiddlewareBuilder {
+	b.ignorePaths = append(b.ignorePaths, ignorePath)
+	return b
+}
+
+func (b *AuthMiddlewareBuilder) IgnorePaths(ignorePaths []string) *AuthMiddlewareBuilder {
+	b.ignorePaths = ignorePaths
+	return b
+}
+
 func (b *AuthMiddlewareBuilder) Build() gin.HandlerFunc {
 	return func(ctx *gin.Context) {
+		for _, ignorePath := range b.ignorePaths {
+			if ctx.Request.URL.Path == ignorePath {
+				ctx.Next()
+				return
+			}
+		}
 		session := sessions.Default(ctx)
 		userId := session.Get("user_id")
 		if userId == nil {

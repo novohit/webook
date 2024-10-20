@@ -17,7 +17,7 @@ func NewUserRouter(uh *handler.UserHandler) *UserRouter {
 
 func (u *UserRouter) RegisterUserRoutes(router *gin.RouterGroup) {
 
-	requireLogin := middleware.NewAuthMiddlewareBuilder().Build()
+	requireLogin := middleware.NewAuthMiddlewareBuilder().IgnorePath("/api/v2/users/profile").Build()
 	userGroup := router.Group("/users")
 	{
 		userGroup.GET("/profile", requireLogin, u.uh.Profile) // 获取其他用户信息

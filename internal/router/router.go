@@ -10,7 +10,7 @@ import (
 
 	"github.com/gin-contrib/cors"
 	"github.com/gin-contrib/sessions"
-	"github.com/gin-contrib/sessions/cookie"
+	"github.com/gin-contrib/sessions/redis"
 	"github.com/gin-gonic/gin"
 	"gorm.io/driver/mysql"
 	"gorm.io/gorm"
@@ -34,7 +34,12 @@ func InitRouter() *gin.Engine {
 		MaxAge: 12 * time.Hour,
 	}))
 	//r.Use(middleware.AuthRequire())
-	store := cookie.NewStore([]byte("secret"))
+	//store := cookie.NewStore([]byte("secret"))
+	store, err := redis.NewStore(16, "tcp", "localhost:6379", "",
+		[]byte("b5ntFvvEfUbKG4Bn"))
+	if err != nil {
+		panic(err)
+	}
 	r.Use(sessions.Sessions("session_id", store))
 
 	r.GET("/ping", func(c *gin.Context) {
