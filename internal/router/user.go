@@ -22,6 +22,7 @@ func (u *UserRouter) RegisterUserRoutes(router *gin.RouterGroup) {
 	{
 		userGroup.GET("/profile", requireLogin, u.uh.Profile) // 获取其他用户信息
 		userGroup.POST("/signup", u.uh.SignUp)                // 注册
+		userGroup.POST("/logout", u.uh.SignOut)               // 注销
 		userGroup.POST("/login", u.uh.SignIn)                 // 登录
 		userGroup.PUT("/edit", requireLogin, u.uh.Edit)       // 登录
 	}

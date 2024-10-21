@@ -2,6 +2,7 @@ package middleware
 
 import (
 	"net/http"
+	"time"
 
 	"github.com/gin-contrib/sessions"
 	"github.com/gin-gonic/gin"
@@ -41,6 +42,26 @@ func (b *AuthMiddlewareBuilder) Build() gin.HandlerFunc {
 				"message": "用户未登录",
 			})
 			return
+		}
+
+		// refresh session
+		updated := session.Get("updated_at")
+		session.Options(sessions.Options{
+			MaxAge: 30 * 60,
+		})
+		session.Set("user_id", userId)
+
+		now := time.Now().UnixMilli()
+		if updated == nil {
+			session.Set("updated_at", now)
+			session.Save()
+			return
+		}
+
+		updatedts := updated.(int64)
+		if now-updatedts > 10*60*1000 {
+			session.Set("updated_at", now)
+			session.Save()
 		}
 	}
 }

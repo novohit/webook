@@ -53,9 +53,24 @@ func (u *UserHandler) SignIn(ctx *gin.Context) {
 		return
 	}
 	session := sessions.Default(ctx)
-	session.Set("user_id", user.Email)
+	session.Set("user_id", user.Id)
+	session.Options(sessions.Options{
+		MaxAge: 30 * 60,
+		// 线上环境需要配置
+		//Secure:   true,
+		//HttpOnly: true,
+	})
 	session.Save()
 	ctx.JSON(200, gin.H{"message": "success", "data": user})
+}
+
+func (u *UserHandler) SignOut(ctx *gin.Context) {
+	session := sessions.Default(ctx)
+	session.Options(sessions.Options{MaxAge: -1})
+	// MaxAge 设置成-1 redis里会自动清空对应的session 不需要手动删除
+	//session.Delete("user_id")
+	session.Save()
+	ctx.JSON(200, gin.H{"message": "success"})
 }
 
 func (u *UserHandler) SignUp(ctx *gin.Context) {
