@@ -6,6 +6,7 @@ import (
 	"webook/internal/domain"
 	"webook/internal/global"
 	"webook/internal/repository"
+	"webook/pkg/jwt"
 
 	"golang.org/x/crypto/bcrypt"
 )
@@ -41,4 +42,20 @@ func (svc *UserService) SignIn(ctx context.Context, u domain.User) (*domain.User
 		return nil, global.ErrUserOrPassword
 	}
 	return &dbUser, nil
+}
+
+func (svc *UserService) SignInJWT(ctx context.Context, u domain.User) (string, error) {
+	dbUser, err := svc.repo.GetByEmail(ctx, u.Email)
+	if err != nil {
+		return "", global.ErrUserNotFound
+	}
+	err = bcrypt.CompareHashAndPassword([]byte(dbUser.Password), []byte(u.Password))
+	if err != nil {
+		return "", global.ErrUserOrPassword
+	}
+	token, err := jwt.GenToken(dbUser.Email)
+	if err != nil {
+		return "", err
+	}
+	return token, nil
 }

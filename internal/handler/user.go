@@ -64,6 +64,29 @@ func (u *UserHandler) SignIn(ctx *gin.Context) {
 	ctx.JSON(200, gin.H{"message": "success", "data": user})
 }
 
+func (u *UserHandler) SignInJWT(ctx *gin.Context) {
+	type SignInReq struct {
+		Email    string `json:"email" binding:"required"`
+		Password string `json:"password" binding:"required"`
+	}
+
+	var req SignInReq
+	if err := ctx.ShouldBind(&req); err != nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+
+	token, err := u.svc.SignInJWT(ctx, domain.User{
+		Email:    req.Email,
+		Password: req.Password,
+	})
+	if err != nil {
+		ctx.JSON(http.StatusOK, gin.H{"error": err.Error()})
+		return
+	}
+	ctx.JSON(200, gin.H{"message": "success", "data": token})
+}
+
 func (u *UserHandler) SignOut(ctx *gin.Context) {
 	session := sessions.Default(ctx)
 	session.Options(sessions.Options{MaxAge: -1})
