@@ -11,7 +11,8 @@ import (
 var mySigningKey []byte
 
 type MyCustomClaims struct {
-	Identify string `json:"identify"`
+	Identify  string `json:"identify"`
+	UserAgent string `json:"user_agent"`
 	jwt.RegisteredClaims
 }
 
@@ -19,11 +20,12 @@ func initSecret() {
 	mySigningKey = []byte("secret")
 }
 
-func GenToken(identify string) (string, error) {
+func GenToken(identify string, ug string) (string, error) {
 	initSecret()
 	// Create claims with multiple fields populated
 	claims := MyCustomClaims{
 		identify,
+		ug,
 		jwt.RegisteredClaims{
 			// A usual scenario is to set the expiration time relative to the current time
 			ExpiresAt: jwt.NewNumericDate(time.Now().Add(7 * 24 * time.Hour)),

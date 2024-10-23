@@ -1,6 +1,7 @@
 package middleware
 
 import (
+	"fmt"
 	"net/http"
 	"strings"
 	"time"
@@ -54,6 +55,17 @@ func (b *AuthMiddlewareBuilder) BuildJWT() gin.HandlerFunc {
 		}
 		claims, err := jwt.VerifyToken(parts[1])
 		if err != nil {
+			ctx.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{
+				"message": "用户未登录",
+			})
+			return
+		}
+
+		userAgent := claims.UserAgent
+		if ctx.Request.UserAgent() != userAgent {
+			// 不正常的敏感操作 监控 发警告
+			// 即使是换设备登录 token 应该是空的
+			fmt.Printf("异常登录 当前请求 user-agent [%s], token [%s]\n", ctx.Request.UserAgent(), userAgent)
 			ctx.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{
 				"message": "用户未登录",
 			})

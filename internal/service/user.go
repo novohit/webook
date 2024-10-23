@@ -44,7 +44,7 @@ func (svc *UserService) SignIn(ctx context.Context, u domain.User) (*domain.User
 	return &dbUser, nil
 }
 
-func (svc *UserService) SignInJWT(ctx context.Context, u domain.User) (string, error) {
+func (svc *UserService) SignInJWT(ctx context.Context, u domain.User, userAgent string) (string, error) {
 	dbUser, err := svc.repo.GetByEmail(ctx, u.Email)
 	if err != nil {
 		return "", global.ErrUserNotFound
@@ -53,7 +53,7 @@ func (svc *UserService) SignInJWT(ctx context.Context, u domain.User) (string, e
 	if err != nil {
 		return "", global.ErrUserOrPassword
 	}
-	token, err := jwt.GenToken(dbUser.Email)
+	token, err := jwt.GenToken(dbUser.Email, userAgent)
 	if err != nil {
 		return "", err
 	}

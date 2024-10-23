@@ -78,7 +78,7 @@ func (u *UserHandler) SignInJWT(ctx *gin.Context) {
 	token, err := u.svc.SignInJWT(ctx, domain.User{
 		Email:    req.Email,
 		Password: req.Password,
-	})
+	}, ctx.Request.UserAgent())
 	if err != nil {
 		ctx.JSON(http.StatusOK, gin.H{"error": err.Error()})
 		return
