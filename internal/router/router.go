@@ -7,11 +7,13 @@ import (
 	"webook/internal/repository"
 	"webook/internal/repository/database"
 	"webook/internal/service"
+	"webook/pkg/ginx/ratelimit"
 
 	"github.com/gin-contrib/cors"
 	"github.com/gin-contrib/sessions"
-	"github.com/gin-contrib/sessions/redis"
+	sessionRedis "github.com/gin-contrib/sessions/redis"
 	"github.com/gin-gonic/gin"
+	"github.com/redis/go-redis/v9"
 	"gorm.io/driver/mysql"
 	"gorm.io/gorm"
 )
@@ -35,12 +37,14 @@ func InitRouter() *gin.Engine {
 	}))
 	//r.Use(middleware.AuthRequire())
 	//store := cookie.NewStore([]byte("secret"))
-	store, err := redis.NewStore(16, "tcp", "localhost:6379", "",
+	store, err := sessionRedis.NewStore(16, "tcp", "localhost:6379", "",
 		[]byte("b5ntFvvEfUbKG4Bn"))
 	if err != nil {
 		panic(err)
 	}
 	r.Use(sessions.Sessions("session_id", store))
+
+	r.Use(ratelimit.NewBuilder(initCache(), 5*time.Second, 2).Build())
 
 	r.GET("/ping", func(c *gin.Context) {
 		c.JSON(200, gin.H{"message": "pong"})
@@ -64,6 +68,14 @@ func initUserHandler(db *gorm.DB) *handler.UserHandler {
 	svc := service.NewUserService(repo)
 	uh := handler.NewUserHandler(svc)
 	return uh
+}
+
+func initCache() *redis.Client {
+	//redis
+	client := redis.NewClient(&redis.Options{
+		Addr: "localhost:6379",
+	})
+	return client
 }
 
 func initDB() *gorm.DB {

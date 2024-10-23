@@ -8,7 +8,6 @@ import (
 
 	regexp2 "github.com/dlclark/regexp2"
 	"github.com/gin-contrib/sessions"
-
 	"github.com/gin-gonic/gin"
 )
 
@@ -137,7 +136,8 @@ func (u *UserHandler) SignUp(ctx *gin.Context) {
 
 func (u *UserHandler) Profile(ctx *gin.Context) {
 	//
-	ctx.JSON(http.StatusOK, gin.H{"message": "success"})
+	value, _ := ctx.Get("identify")
+	ctx.JSON(http.StatusOK, gin.H{"message": "success", "data": value})
 }
 
 func (u *UserHandler) Edit(ctx *gin.Context) {
