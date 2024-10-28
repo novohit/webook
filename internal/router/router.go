@@ -3,6 +3,7 @@ package router
 import (
 	"strings"
 	"time"
+	"webook/internal/config"
 	"webook/internal/handler"
 	"webook/internal/repository"
 	"webook/internal/repository/database"
@@ -37,7 +38,7 @@ func InitRouter() *gin.Engine {
 	}))
 	//r.Use(middleware.AuthRequire())
 	//store := cookie.NewStore([]byte("secret"))
-	store, err := sessionRedis.NewStore(16, "tcp", "localhost:6379", "",
+	store, err := sessionRedis.NewStore(16, "tcp", config.AppConf.RedisConfig.Addr, "",
 		[]byte("b5ntFvvEfUbKG4Bn"))
 	if err != nil {
 		panic(err)
@@ -79,7 +80,7 @@ func initCache() *redis.Client {
 }
 
 func initDB() *gorm.DB {
-	db, err := gorm.Open(mysql.Open("root:root@tcp(localhost:13306)/webook"))
+	db, err := gorm.Open(mysql.Open(config.AppConf.MySQLConfig.DNS))
 	if err != nil {
 		panic("failed to connect database")
 	}
