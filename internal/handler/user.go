@@ -1,8 +1,10 @@
 package handler
 
 import (
+	"fmt"
 	"net/http"
 	"regexp"
+	"strconv"
 	"webook/internal/domain"
 	"webook/internal/service"
 
@@ -136,8 +138,17 @@ func (u *UserHandler) SignUp(ctx *gin.Context) {
 
 func (u *UserHandler) Profile(ctx *gin.Context) {
 	//
-	value, _ := ctx.Get("identify")
-	ctx.JSON(http.StatusOK, gin.H{"message": "success", "data": value})
+	value, _ := ctx.Get("user_id")
+	strId := value.(string)
+	id, err := strconv.ParseInt(strId, 10, 64)
+	if err == nil {
+		fmt.Printf("%d of type %T", id, id)
+	}
+	user, err := u.svc.Profile(ctx, id)
+	if err != nil {
+		ctx.JSON(http.StatusOK, gin.H{"error": err.Error()})
+	}
+	ctx.JSON(http.StatusOK, gin.H{"message": "success", "data": user})
 }
 
 func (u *UserHandler) Edit(ctx *gin.Context) {

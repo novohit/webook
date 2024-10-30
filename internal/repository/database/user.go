@@ -26,6 +26,12 @@ func (dao *UserDAO) SelectByEmail(ctx context.Context, email string) (User, erro
 	return u, err
 }
 
+func (dao *UserDAO) SelectById(ctx context.Context, id int64) (User, error) {
+	var u User
+	err := dao.db.WithContext(ctx).Where("id = ?", id).First(&u).Error
+	return u, err
+}
+
 type User struct {
 	Id        int64  `gorm:"primarykey"`
 	Email     string `gorm:"type:varchar(255);unique"`

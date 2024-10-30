@@ -2,6 +2,7 @@ package service
 
 import (
 	"context"
+	"strconv"
 	"time"
 	"webook/internal/domain"
 	"webook/internal/global"
@@ -17,6 +18,10 @@ type UserService struct {
 
 func NewUserService(repo *repository.UserRepository) *UserService {
 	return &UserService{repo: repo}
+}
+
+func (svc *UserService) Profile(ctx context.Context, id int64) (domain.User, error) {
+	return svc.repo.FindById(ctx, id)
 }
 
 func (svc *UserService) SignUp(ctx context.Context, u domain.User) error {
@@ -53,7 +58,7 @@ func (svc *UserService) SignInJWT(ctx context.Context, u domain.User, userAgent 
 	if err != nil {
 		return "", global.ErrUserOrPassword
 	}
-	token, err := jwt.GenToken(dbUser.Email, userAgent)
+	token, err := jwt.GenToken(strconv.FormatInt(dbUser.Id, 10), userAgent)
 	if err != nil {
 		return "", err
 	}

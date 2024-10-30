@@ -6,6 +6,7 @@ import (
 	"webook/internal/config"
 	"webook/internal/handler"
 	"webook/internal/repository"
+	"webook/internal/repository/cache"
 	"webook/internal/repository/database"
 	"webook/internal/service"
 	"webook/pkg/ginx/ratelimit"
@@ -52,7 +53,8 @@ func InitRouter() *gin.Engine {
 	})
 
 	db := initDB()
-	uh := initUserHandler(db)
+	client := initCache()
+	uh := initUserHandler(db, client)
 	u := NewUserRouter(uh)
 
 	v1 := r.Group("/api/v1")
@@ -63,9 +65,10 @@ func InitRouter() *gin.Engine {
 	return r
 }
 
-func initUserHandler(db *gorm.DB) *handler.UserHandler {
+func initUserHandler(db *gorm.DB, client redis.Cmdable) *handler.UserHandler {
 	dao := database.NewUserDAO(db)
-	repo := repository.NewUserRepository(dao)
+	ucache := cache.NewUserCache(client)
+	repo := repository.NewUserRepository(dao, ucache)
 	svc := service.NewUserService(repo)
 	uh := handler.NewUserHandler(svc)
 	return uh

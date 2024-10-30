@@ -72,7 +72,7 @@ func (b *AuthMiddlewareBuilder) BuildJWT() gin.HandlerFunc {
 			return
 		}
 
-		ctx.Set("identify", claims.Identify)
+		ctx.Set("user_id", claims.Identify)
 	}
 }
 
