@@ -32,8 +32,8 @@ func (svc *UserService) SignUp(ctx context.Context, u domain.User) error {
 	}
 	u.Password = string(hash)
 	// 入库
-	u.Created = time.Now().UnixMilli()
-	u.Updated = time.Now().UnixMilli()
+	u.CreatedAt = time.Now().UnixMilli()
+	u.UpdatedAt = time.Now().UnixMilli()
 	return svc.repo.Create(ctx, u)
 }
 

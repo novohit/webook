@@ -2,6 +2,7 @@ package repository
 
 import (
 	"context"
+	"database/sql"
 	"webook/internal/domain"
 	"webook/internal/repository/cache"
 	"webook/internal/repository/database"
@@ -20,12 +21,7 @@ func NewUserRepository(dao *database.UserDAO, cache *cache.UserCache) *UserRepos
 }
 
 func (r *UserRepository) Create(ctx context.Context, u domain.User) error {
-	return r.dao.Insert(ctx, database.User{
-		Email:     u.Email,
-		Password:  u.Password,
-		CreatedAt: u.Created,
-		UpdatedAt: u.Updated,
-	})
+	return r.dao.Insert(ctx, r.domain2Entity(u))
 }
 
 func (r *UserRepository) GetByEmail(ctx context.Context, email string) (domain.User, error) {
@@ -33,13 +29,7 @@ func (r *UserRepository) GetByEmail(ctx context.Context, email string) (domain.U
 	if err != nil {
 		return domain.User{}, err
 	}
-	return domain.User{
-		Id:       u.Id,
-		Email:    u.Email,
-		Password: u.Password,
-		Created:  u.CreatedAt,
-		Updated:  u.UpdatedAt,
-	}, nil
+	return r.entity2Domain(u), nil
 }
 
 func (r *UserRepository) FindById(ctx context.Context, id int64) (domain.User, error) {
@@ -59,13 +49,7 @@ func (r *UserRepository) FindById(ctx context.Context, id int64) (domain.User, e
 		return domain.User{}, err
 	}
 
-	user = domain.User{
-		Id:       dbUser.Id,
-		Email:    dbUser.Email,
-		Password: dbUser.Password,
-		Created:  dbUser.CreatedAt,
-		Updated:  dbUser.UpdatedAt,
-	}
+	user = r.entity2Domain(dbUser)
 
 	// 由于用缓存本身一般就做不到强一致性 所以下面代码可以放到 goroutine
 	// 设置缓存
@@ -74,4 +58,32 @@ func (r *UserRepository) FindById(ctx context.Context, id int64) (domain.User, e
 		// 缓存设置失败 打日志 做监控
 	}
 	return user, err
+}
+
+func (r *UserRepository) entity2Domain(u database.User) domain.User {
+	return domain.User{
+		Id:        u.Id,
+		Email:     u.Email.String,
+		Phone:     u.Phone.String,
+		Password:  u.Password,
+		CreatedAt: u.CreatedAt,
+		UpdatedAt: u.UpdatedAt,
+	}
+}
+
+func (r *UserRepository) domain2Entity(u domain.User) database.User {
+	return database.User{
+		Id: u.Id,
+		Email: sql.NullString{
+			String: u.Email,
+			Valid:  u.Email != "",
+		},
+		Phone: sql.NullString{
+			String: u.Phone,
+			Valid:  u.Phone != "",
+		},
+		Password:  u.Password,
+		CreatedAt: u.CreatedAt,
+		UpdatedAt: u.UpdatedAt,
+	}
 }

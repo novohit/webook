@@ -2,6 +2,7 @@ package database
 
 import (
 	"context"
+	"database/sql"
 
 	"gorm.io/gorm"
 )
@@ -33,8 +34,11 @@ func (dao *UserDAO) SelectById(ctx context.Context, id int64) (User, error) {
 }
 
 type User struct {
-	Id        int64  `gorm:"primarykey"`
-	Email     string `gorm:"type:varchar(255);unique"`
+	Id int64 `gorm:"primarykey"`
+	// https://stackoverflow.com/questions/40092155/difference-between-string-and-sql-nullstring
+	// 在多种登录方式下 Email 和 Phone 其中一者可能会为 null，推荐使用sql.Null*表示，而不是 *string
+	Email     sql.NullString `gorm:"type:varchar(255);unique"`
+	Phone     sql.NullString `gorm:"type:varchar(255);unique"`
 	Password  string
 	CreatedAt int64
 	UpdatedAt int64

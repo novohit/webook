@@ -175,6 +175,8 @@ func (u *UserHandler) SendSMS(ctx *gin.Context) {
 		return
 	}
 
+	// 校验成功 进行登录或者新建一个用户
+
 	ctx.JSON(http.StatusOK, gin.H{"message": "success"})
 }
 
