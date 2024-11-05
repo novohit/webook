@@ -12,14 +12,18 @@ local cnt = tonumber(redis.call('get', cntKey))
 local code = redis.call('get', codeKey)
 
 -- 尝试超过最大次数
-if cnt <= 0 then
+if cnt == 0 then
     return -1
+-- 输入正确 但已经被使用 未过期
+elseif cnt == -1 then
+    return -2
 -- 输入正确
 elseif inputCode == code then
     -- 不能立刻删除验证码，因为如果你删除了可以立刻再次发送验证码
     -- 把次数标记位 -1，认为验证码不可用
     redis.call('set', cntKey, -1)
     return 0
+-- 输入错误
 else
     redis.call('decr', cntKey)
     return -2
