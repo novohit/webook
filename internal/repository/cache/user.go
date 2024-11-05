@@ -10,8 +10,8 @@ import (
 	"github.com/redis/go-redis/v9"
 )
 
-// A 用到了 B，B一定是接口
-// A 用到了 B，B一定是A的字段
+// A 用到了 B，B一定是接口 => 面向接口
+// A 用到了 B，B一定是A的字段 => 规避包变量 包方法（与业务相关的逻辑）
 // A 用到了 B，A 绝对不初始化B，而是外面注入
 type UserCache struct {
 	// client     *redis.Cmdable 这里不能用指针，因为Cmdable是接口，不然获取不到方法

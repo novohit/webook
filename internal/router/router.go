@@ -68,9 +68,11 @@ func InitRouter() *gin.Engine {
 func initUserHandler(db *gorm.DB, client redis.Cmdable) *handler.UserHandler {
 	dao := database.NewUserDAO(db)
 	ucache := cache.NewUserCache(client)
+	codeCache := cache.NewCodeCache(client)
 	repo := repository.NewUserRepository(dao, ucache)
 	svc := service.NewUserService(repo)
-	uh := handler.NewUserHandler(svc)
+	codeSvc := service.NewCodeService(codeCache)
+	uh := handler.NewUserHandler(svc, codeSvc)
 	return uh
 }
 

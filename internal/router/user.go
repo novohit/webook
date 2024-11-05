@@ -25,6 +25,8 @@ func (u *UserRouter) RegisterUserRoutes(router *gin.RouterGroup) {
 		userGroup.POST("/logout", u.uh.SignOut)               // 注销
 		userGroup.POST("/login", u.uh.SignIn)                 // 登录
 		userGroup.POST("/login-jwt", u.uh.SignInJWT)          // 登录
-		userGroup.PUT("/edit", requireLogin, u.uh.Edit)       // 登录
+		userGroup.PUT("/edit", requireLogin, u.uh.Edit)       // 编辑
+		userGroup.POST("/login/send-sms", u.uh.SendSMS)       // 发送验证码
+		userGroup.POST("/login/sms", u.uh.SignInSMS)          // 验证码登录
 	}
 }

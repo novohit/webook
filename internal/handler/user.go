@@ -21,14 +21,16 @@ const (
 
 type UserHandler struct {
 	svc         *service.UserService
+	codeSvc     *service.CodeService
 	passwordExp *regexp2.Regexp
 }
 
-func NewUserHandler(svc *service.UserService) *UserHandler {
+func NewUserHandler(svc *service.UserService, codeSvc *service.CodeService) *UserHandler {
 	//optimize 预编译正则表达式
 	re := regexp2.MustCompile(passwordRegexPattern, 0)
 	return &UserHandler{
 		svc:         svc,
+		codeSvc:     codeSvc,
 		passwordExp: re,
 	}
 }
@@ -153,4 +155,52 @@ func (u *UserHandler) Profile(ctx *gin.Context) {
 
 func (u *UserHandler) Edit(ctx *gin.Context) {
 
+}
+
+func (u *UserHandler) SendSMS(ctx *gin.Context) {
+	type SendSMSReq struct {
+		Phone string `json:"phone" binding:"required"`
+	}
+
+	var req SendSMSReq
+	if err := ctx.ShouldBindJSON(&req); err != nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+
+	const biz = "login"
+	err := u.codeSvc.Send(ctx, biz, req.Phone)
+	if err != nil {
+		ctx.JSON(http.StatusOK, gin.H{"error": err.Error()})
+		return
+	}
+
+	ctx.JSON(http.StatusOK, gin.H{"message": "success"})
+}
+
+func (u *UserHandler) SignInSMS(ctx *gin.Context) {
+	type LoginSMSReq struct {
+		Phone     string `json:"phone" binding:"required"`
+		InputCode string `json:"input_code" binding:"required"`
+	}
+
+	var req LoginSMSReq
+	if err := ctx.ShouldBindJSON(&req); err != nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+
+	const biz = "login"
+	ok, err := u.codeSvc.Verify(ctx, biz, req.Phone, req.InputCode)
+	if err != nil {
+		ctx.JSON(http.StatusOK, gin.H{"error": err.Error()})
+		return
+	}
+
+	if !ok {
+		ctx.JSON(http.StatusOK, gin.H{"message": "验证码错误"})
+		return
+	}
+
+	ctx.JSON(http.StatusOK, gin.H{"message": "success"})
 }
