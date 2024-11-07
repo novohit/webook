@@ -52,10 +52,10 @@ func InitRouter() *gin.Engine {
 		c.JSON(200, gin.H{"message": "pong"})
 	})
 
-	db := initDB()
-	client := initCache()
-	uh := initUserHandler(db, client)
-	u := NewUserRouter(uh)
+	//db := initDB()
+	//client := initCache()
+	//uh := initUserHandler(db, client)
+	u := InitUserRouter()
 
 	v1 := r.Group("/api/v1")
 	{

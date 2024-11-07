@@ -37,6 +37,7 @@ type User struct {
 	Id int64 `gorm:"primarykey"`
 	// https://stackoverflow.com/questions/40092155/difference-between-string-and-sql-nullstring
 	// 在多种登录方式下 Email 和 Phone 其中一者可能会为 null，推荐使用sql.Null*表示，而不是 *string
+	// 因为使用指针，取值需要解引用，而解引用需要先对引用判nil，否则会panic
 	Email     sql.NullString `gorm:"type:varchar(255);unique"`
 	Phone     sql.NullString `gorm:"type:varchar(255);unique"`
 	Password  string
