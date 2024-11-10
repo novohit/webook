@@ -11,6 +11,11 @@ local cntKey = codeKey..':cnt'
 local cnt = tonumber(redis.call('get', cntKey))
 local code = redis.call('get', codeKey)
 
+-- lua会将redis-cli返回的nil转换成bool类型，除了tonumber会返回nil
+if not code or cnt == nil then
+    return -2
+end
+
 -- 尝试超过最大次数
 if cnt == 0 then
     return -1
