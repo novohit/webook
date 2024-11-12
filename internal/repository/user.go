@@ -3,6 +3,7 @@ package repository
 import (
 	"context"
 	"database/sql"
+	"fmt"
 	"webook/internal/domain"
 	"webook/internal/repository/cache"
 	"webook/internal/repository/database"
@@ -13,6 +14,14 @@ type UserRepository struct {
 	cache *cache.UserCache
 }
 
+type Foo interface {
+	Bar(x int) int
+}
+
+func SUT(f Foo) {
+	// ...
+	fmt.Println("ffff")
+}
 func NewUserRepository(dao *database.UserDAO, cache *cache.UserCache) *UserRepository {
 	return &UserRepository{
 		dao:   dao,

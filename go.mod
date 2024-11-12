@@ -1,6 +1,8 @@
 module webook
 
-go 1.21
+go 1.22
+
+toolchain go1.22.9
 
 require (
 	github.com/dlclark/regexp2 v1.11.4
@@ -11,6 +13,7 @@ require (
 	github.com/google/wire v0.6.0
 	github.com/redis/go-redis/v9 v9.7.0
 	github.com/stretchr/testify v1.9.0
+	go.uber.org/mock v0.5.0
 	golang.org/x/crypto v0.23.0
 	gorm.io/driver/mysql v1.5.7
 	gorm.io/gorm v1.25.12
