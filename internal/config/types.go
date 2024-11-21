@@ -3,6 +3,8 @@ package config
 type AppConfig struct {
 	*MySQLConfig
 	*RedisConfig
+	AppId       string
+	RedirectUrl string
 }
 
 type MySQLConfig struct {

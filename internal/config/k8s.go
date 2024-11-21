@@ -3,10 +3,12 @@
 package config
 
 var AppConf = AppConfig{
-	&MySQLConfig{
+	MySQLConfig: &MySQLConfig{
 		DNS: "root:root@tcp(localhost:13307)/webook",
 	},
-	&RedisConfig{
+	RedisConfig: &RedisConfig{
 		Addr: "127.0.0.1:16379",
 	},
+	AppId:       "AAAA",
+	RedirectUrl: "baidu.com",
 }

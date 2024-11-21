@@ -12,6 +12,7 @@ import (
 	"webook/internal/repository/cache"
 	"webook/internal/repository/database"
 	"webook/internal/service"
+	"webook/internal/service/oauth2"
 )
 
 // Injectors from wire.go:
@@ -28,4 +29,11 @@ func InitUserRouter() *UserRouter {
 	userHandler := handler.NewUserHandler(userService, codeService)
 	userRouter := NewUserRouter(userHandler)
 	return userRouter
+}
+
+func InitOAuth2Router() *OAuth2Router {
+	oAuth2WechatService := oauth2.NewOAuth2WechatService()
+	oAuth2WeChatHandler := handler.NewOAuth2WeChatHandler(oAuth2WechatService)
+	oAuth2Router := NewOAuth2Router(oAuth2WeChatHandler)
+	return oAuth2Router
 }

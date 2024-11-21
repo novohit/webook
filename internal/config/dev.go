@@ -6,10 +6,12 @@ package config
 // 优势：有编译期的检查
 // 缺点：不会动态更新配置文件 每次需要重新编译
 var AppConf = AppConfig{
-	&MySQLConfig{
+	MySQLConfig: &MySQLConfig{
 		DNS: "root:root@tcp(localhost:13306)/webook",
 	},
-	&RedisConfig{
+	RedisConfig: &RedisConfig{
 		Addr: "127.0.0.1:6379",
 	},
+	AppId:       "AAAA",
+	RedirectUrl: "baidu.com",
 }

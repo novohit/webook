@@ -8,6 +8,7 @@ import (
 	"webook/internal/repository/cache"
 	"webook/internal/repository/database"
 	"webook/internal/service"
+	"webook/internal/service/oauth2"
 
 	"github.com/google/wire"
 )
@@ -26,4 +27,13 @@ func InitUserRouter() *UserRouter {
 		NewUserRouter,
 	)
 	return new(UserRouter)
+}
+
+func InitOAuth2Router() *OAuth2Router {
+	wire.Build(
+		oauth2.NewOAuth2WechatService,
+		handler.NewOAuth2WeChatHandler,
+		NewOAuth2Router,
+	)
+	return new(OAuth2Router)
 }

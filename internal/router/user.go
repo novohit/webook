@@ -15,7 +15,7 @@ func NewUserRouter(uh *handler.UserHandler) *UserRouter {
 	return &UserRouter{uh: uh}
 }
 
-func (u *UserRouter) RegisterUserRoutes(router *gin.RouterGroup) {
+func (u *UserRouter) RegisterRoutes(router *gin.RouterGroup) {
 
 	requireLogin := middleware.NewAuthMiddlewareBuilder().IgnorePath("/api/v2/users/profile").BuildJWT()
 	userGroup := router.Group("/users")

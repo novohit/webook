@@ -55,11 +55,12 @@ func InitRouter() *gin.Engine {
 	//db := initDB()
 	//client := initCache()
 	//uh := initUserHandler(db, client)
-	u := InitUserRouter()
+	//u := InitUserRouter()
 
 	v1 := r.Group("/api/v1")
 	{
-		u.RegisterUserRoutes(v1)
+		InitUserRouter().RegisterRoutes(v1)
+		InitOAuth2Router().RegisterRoutes(v1)
 	}
 
 	return r
