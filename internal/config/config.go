@@ -2,6 +2,7 @@ package config
 
 import (
 	"fmt"
+	"time"
 
 	"github.com/fsnotify/fsnotify"
 	"github.com/spf13/pflag"
@@ -28,14 +29,26 @@ func InitV3() {
 		panic(err)
 	}
 
-	viper.WatchConfig()
-	viper.OnConfigChange(func(in fsnotify.Event) {
-		fmt.Println("viper.OnConfigChange ...")
-		if err := viper.Unmarshal(Conf); err != nil {
-			fmt.Printf("viper.Unmarshal failed, err: %v\n", err)
-			fmt.Printf("viper config: %v\n", viper.AllSettings())
+	// open a goroutine to watch remote changes forever
+	go func() {
+		for {
+			time.Sleep(time.Second * 5) // delay after each request
+
+			// currently, only tested with etcd support
+			err := viper.WatchRemoteConfig()
+			if err != nil {
+				fmt.Printf("unable to read remote config: %v\n", err)
+				continue
+			}
+
+			// unmarshal new config into our runtime config struct. you can also use channel
+			// to implement a signal to notify the system of the changes
+			if err := viper.Unmarshal(Conf); err != nil {
+				fmt.Printf("viper.Unmarshal failed, err: %v\n", err)
+				panic(err)
+			}
 		}
-	})
+	}()
 }
 
 func InitV2() {
