@@ -1,16 +1,18 @@
 package config
 
+var Conf = new(AppConfig)
+
 type AppConfig struct {
-	*MySQLConfig
-	*RedisConfig
-	AppId       string
-	RedirectUrl string
+	*MySQLConfig `mapstructure:"mysql"`
+	*RedisConfig `mapstructure:"redis"`
+	AppId        string `mapstructure:"app_id"`
+	RedirectUrl  string `mapstructure:"redirect_url"`
 }
 
 type MySQLConfig struct {
-	DNS string
+	DNS string `mapstructure:"dns"`
 }
 
 type RedisConfig struct {
-	Addr string
+	Addr string `mapstructure:"addr"`
 }

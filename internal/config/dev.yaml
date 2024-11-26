@@ -1,0 +1,40 @@
+name: "welding"
+mode: "dev"
+host: localhost
+port: 8081
+version: "v0.0.1"
+
+snowflake:
+  start_time: "2023-01-01"
+  machine_id: 1
+
+auth:
+  jwt_expired:
+  secret: "hello"
+
+email:
+
+log:
+  model: "dev"
+  level: "info"
+  filename: "app.log"
+  max_size: 200
+  max_age: 30
+  max_backups: 3
+
+mysql:
+  dns: "root:root@tcp(localhost:13306)/webook"
+  host: 172.22.121.63
+  port: 30324
+  username: root
+  password: lZKKkGj4UZ
+  database: "test_bit"
+  max_open_conns: 200
+  max_idle_conns: 50
+
+redis:
+  host: 116.62.108.144
+  port: 6379
+  password: redis
+  database: 5
+  pool_size: 100
