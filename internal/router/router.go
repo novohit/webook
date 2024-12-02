@@ -21,7 +21,9 @@ import (
 )
 
 func InitRouter() *gin.Engine {
-	r := gin.Default()
+	r := gin.New()
+	//r.Use(logger.Ginzap(zap.L(), time.DateTime, false))
+	//r.Use(logger.RecoveryWithZap(zap.L(), true))
 	cors.Default()
 	r.Use(cors.New(cors.Config{
 		//AllowOrigins:     []string{"https://foo.com"},

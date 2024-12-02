@@ -1,0 +1,5 @@
+{"level":"info","ts":"2024-12-02 23:15:00","caller":"cmd/main.go:16","msg":"hello world"}
+{"level":"info","ts":"2024-12-02 23:16:35","caller":"cmd/main.go:16","msg":"hello world"}
+{"level":"info","ts":"2024-12-02 23:16:39","caller":"logger/zap.go:117","msg":"/api/v1/user/register","status":404,"method":"POST","path":"/api/v1/user/register","query":"","ip":"::1","user-agent":"PostmanRuntime/7.42.0","latency":0.0196047,"time":"2024-12-02 23:16:39"}
+{"level":"info","ts":"2024-12-02 23:18:05","caller":"cmd/main.go:16","msg":"hello world"}
+{"level":"info","ts":"2024-12-02 23:18:09","caller":"logger/zap.go:117","msg":"/api/v1/user/register","status":404,"method":"POST","path":"/api/v1/user/register","query":"","ip":"::1","user-agent":"PostmanRuntime/7.42.0","latency":0.0220507,"time":"2024-12-02 23:18:09"}

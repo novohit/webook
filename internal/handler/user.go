@@ -143,7 +143,7 @@ func (u *UserHandler) Profile(ctx *gin.Context) {
 	value, _ := ctx.Get("user_id")
 	strId := value.(string)
 	id, err := strconv.ParseInt(strId, 10, 64)
-	if err == nil {
+	if err != nil {
 		fmt.Printf("%d of type %T", id, id)
 	}
 	user, err := u.svc.Profile(ctx, id)
